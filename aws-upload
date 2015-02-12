@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+load 'lib/get-keys.rb'
+load 'lib/connect.rb'
+#===============================================================================
+
+if ARGV.length < 2
+    puts "Bucket name and at least one file needed."
+    exit(1)
+end
+
+# make connection 
+begin
+    bucket = aws_connect( ARGV.shift )
+    if nil == bucket
+        raise "Bad bucket name."
+    end
+rescue
+    puts "Error: AWS failed to connect."
+    puts $!
+    exit(1)
+end
+
+ARGV.each do | file |
+    begin
+        if (File.readable?(file) && File.file?(file))
+            status( file )
+        end
+    rescue
+        next
+    end
+end
+
